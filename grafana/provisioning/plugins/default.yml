@@ -1,0 +1,6 @@
+apiVersion: 1
+
+apps:
+  - type: marcusolsson-json-datasource
+    org_id: 1
+    disabled: true

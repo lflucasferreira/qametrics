@@ -1,0 +1,3384 @@
+{
+	"info": {
+		"_postman_id": "fc041f7c-6350-4782-98f5-589efc815505",
+		"name": "qametrics",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "sonarcloud",
+			"item": [
+				{
+					"name": "getMetrics",
+					"item": [
+						{
+							"name": "cart-calculator-service-metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_cart_calculator_service\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"\t`${service}_coverage`,",
+											"\t`${service}_new_coverage`,",
+											"\t`${service}_code_smells`,",
+											"\t`${service}_new_code_smells`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function measure(metric) {",
+											"\tlet result = jsonData.component.measures.find(measure => measure.metric === metric);",
+											"\tif (result === undefined) {",
+											"\t\treturn false;",
+											"\t} else if (metric.includes(\"new\")) {",
+											"\t\treturn result.periods.find(period => period.index === 1);",
+											"\t} else {",
+											"\t\treturn result;",
+											"\t}",
+											"}",
+											"",
+											"function getValue(metric) {",
+											"    let result = measure(metric).value",
+											"    result = metric.includes(\"coverage\", \"new_coverage\") ? parseFloat(result/100).toFixed(4) : result",
+											"    return result",
+											"}",
+											"",
+											"function getBestValue(metric) {",
+											"    return measure(metric).bestValue.toString()",
+											"}",
+											"",
+											"function isNotEmpty(metric) {",
+											"\tlet result = measure(metric)",
+											"\treturn (result !== null && result !== \"\" && result !== false)",
+											"}",
+											"",
+											"if (isNotEmpty(\"coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_coverage_value`, getValue(\"coverage\"))",
+											"    pm.collectionVariables.set(`${service}_coverage_bestValue`, getBestValue(\"coverage\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, getValue(\"new_coverage\"))",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, getBestValue(\"new_coverage\"))",
+											"",
+											"} else {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, \"1\")",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, \"true\")",
+											"}",
+											"",
+											"if (isNotEmpty(\"code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_code_smells_value`, getValue(\"code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_code_smells_bestValue`, getBestValue(\"code_smells\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_code_smells_value`, getValue(\"new_code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_new_code_smells_bestValue`, getBestValue(\"new_code_smells\"))",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_id`, jsonData.component.id)",
+											"pm.collectionVariables.set(`${service}_key`, jsonData.component.key)",
+											"pm.collectionVariables.set(`${service}_name`, jsonData.component.name)",
+											"pm.collectionVariables.set(`${service}_qualifier`, jsonData.component.qualifier)",
+											"pm.collectionVariables.set(`${service}_date`, moment(jsonData.periods.first().date).utc().valueOf().toString())",
+											"",
+											"const measures = [\"coverage\", \"new_coverage\", \"code_smells\", \"new_code_smells\"]",
+											"",
+											"measures.forEach(",
+											"    measure => pm.collectionVariables.set(`${service}_metrics_${measure}_type`, jsonData.metrics.find(metric => metric.key === measure).type)",
+											")"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/measures/component?component=java%3Acart-calculator-service&metricKeys=coverage,new_coverage,code_smells,new_code_smells&additionalFields=metrics,periods&branch=master",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"measures",
+										"component"
+									],
+									"query": [
+										{
+											"key": "component",
+											"value": "java%3Acart-calculator-service"
+										},
+										{
+											"key": "metricKeys",
+											"value": "coverage,new_coverage,code_smells,new_code_smells"
+										},
+										{
+											"key": "additionalFields",
+											"value": "metrics,periods"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "charge-service-metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_charge_service\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"\t`${service}_coverage`,",
+											"\t`${service}_new_coverage`,",
+											"\t`${service}_code_smells`,",
+											"\t`${service}_new_code_smells`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function measure(metric) {",
+											"\tlet result = jsonData.component.measures.find(measure => measure.metric === metric);",
+											"\tif (result === undefined) {",
+											"\t\treturn false;",
+											"\t} else if (metric.includes(\"new\")) {",
+											"\t\treturn result.periods.find(period => period.index === 1);",
+											"\t} else {",
+											"\t\treturn result;",
+											"\t}",
+											"}",
+											"",
+											"function getValue(metric) {",
+											"    let result = measure(metric).value",
+											"    result = metric.includes(\"coverage\", \"new_coverage\") ? parseFloat(result/100).toFixed(4) : result",
+											"    return result",
+											"}",
+											"",
+											"function getBestValue(metric) {",
+											"    return measure(metric).bestValue.toString()",
+											"}",
+											"",
+											"function isNotEmpty(metric) {",
+											"\tlet result = measure(metric)",
+											"\treturn (result !== null && result !== \"\" && result !== false)",
+											"}",
+											"",
+											"if (isNotEmpty(\"coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_coverage_value`, getValue(\"coverage\"))",
+											"    pm.collectionVariables.set(`${service}_coverage_bestValue`, getBestValue(\"coverage\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, getValue(\"new_coverage\"))",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, getBestValue(\"new_coverage\"))",
+											"",
+											"} else {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, \"1\")",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, \"true\")",
+											"}",
+											"",
+											"if (isNotEmpty(\"code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_code_smells_value`, getValue(\"code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_code_smells_bestValue`, getBestValue(\"code_smells\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_code_smells_value`, getValue(\"new_code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_new_code_smells_bestValue`, getBestValue(\"new_code_smells\"))",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_id`, jsonData.component.id)",
+											"pm.collectionVariables.set(`${service}_key`, jsonData.component.key)",
+											"pm.collectionVariables.set(`${service}_name`, jsonData.component.name)",
+											"pm.collectionVariables.set(`${service}_qualifier`, jsonData.component.qualifier)",
+											"pm.collectionVariables.set(`${service}_date`, moment(jsonData.periods.first().date).utc().valueOf().toString())",
+											"",
+											"const measures = [\"coverage\", \"new_coverage\", \"code_smells\", \"new_code_smells\"]",
+											"",
+											"measures.forEach(",
+											"    measure => pm.collectionVariables.set(`${service}_metrics_${measure}_type`, jsonData.metrics.find(metric => metric.key === measure).type)",
+											")",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/measures/component?component=java%3Acharge-service&metricKeys=coverage,new_coverage,code_smells,new_code_smells&additionalFields=metrics,periods&branch=master",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"measures",
+										"component"
+									],
+									"query": [
+										{
+											"key": "component",
+											"value": "java%3Acharge-service"
+										},
+										{
+											"key": "metricKeys",
+											"value": "coverage,new_coverage,code_smells,new_code_smells"
+										},
+										{
+											"key": "additionalFields",
+											"value": "metrics,periods"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deal-service-metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_deal_service\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"\t`${service}_coverage`,",
+											"\t`${service}_new_coverage`,",
+											"\t`${service}_code_smells`,",
+											"\t`${service}_new_code_smells`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function measure(metric) {",
+											"\tlet result = jsonData.component.measures.find(measure => measure.metric === metric);",
+											"\tif (result === undefined) {",
+											"\t\treturn false;",
+											"\t} else if (metric.includes(\"new\")) {",
+											"\t\treturn result.periods.find(period => period.index === 1);",
+											"\t} else {",
+											"\t\treturn result;",
+											"\t}",
+											"}",
+											"",
+											"function getValue(metric) {",
+											"    let result = measure(metric).value",
+											"    result = metric.includes(\"coverage\", \"new_coverage\") ? parseFloat(result/100).toFixed(4) : result",
+											"    return result",
+											"}",
+											"",
+											"function getBestValue(metric) {",
+											"    return measure(metric).bestValue.toString()",
+											"}",
+											"",
+											"function isNotEmpty(metric) {",
+											"\tlet result = measure(metric)",
+											"\treturn (result !== null && result !== \"\" && result !== false)",
+											"}",
+											"",
+											"if (isNotEmpty(\"coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_coverage_value`, getValue(\"coverage\"))",
+											"    pm.collectionVariables.set(`${service}_coverage_bestValue`, getBestValue(\"coverage\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, getValue(\"new_coverage\"))",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, getBestValue(\"new_coverage\"))",
+											"",
+											"} else {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, \"1\")",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, \"true\")",
+											"}",
+											"",
+											"if (isNotEmpty(\"code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_code_smells_value`, getValue(\"code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_code_smells_bestValue`, getBestValue(\"code_smells\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_code_smells_value`, getValue(\"new_code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_new_code_smells_bestValue`, getBestValue(\"new_code_smells\"))",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_id`, jsonData.component.id)",
+											"pm.collectionVariables.set(`${service}_key`, jsonData.component.key)",
+											"pm.collectionVariables.set(`${service}_name`, jsonData.component.name)",
+											"pm.collectionVariables.set(`${service}_qualifier`, jsonData.component.qualifier)",
+											"pm.collectionVariables.set(`${service}_date`, moment(jsonData.periods.first().date).utc().valueOf().toString())",
+											"",
+											"const measures = [\"coverage\", \"new_coverage\", \"code_smells\", \"new_code_smells\"]",
+											"",
+											"measures.forEach(",
+											"    measure => pm.collectionVariables.set(`${service}_metrics_${measure}_type`, jsonData.metrics.find(metric => metric.key === measure).type)",
+											")",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/measures/component?component=java%3Adeal-service&metricKeys=coverage,new_coverage,code_smells,new_code_smells&additionalFields=metrics,periods&branch=master",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"measures",
+										"component"
+									],
+									"query": [
+										{
+											"key": "component",
+											"value": "java%3Adeal-service"
+										},
+										{
+											"key": "metricKeys",
+											"value": "coverage,new_coverage,code_smells,new_code_smells"
+										},
+										{
+											"key": "additionalFields",
+											"value": "metrics,periods"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "price-service-metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_price_service\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"\t`${service}_coverage`,",
+											"\t`${service}_new_coverage`,",
+											"\t`${service}_code_smells`,",
+											"\t`${service}_new_code_smells`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function measure(metric) {",
+											"\tlet result = jsonData.component.measures.find(measure => measure.metric === metric);",
+											"\tif (result === undefined) {",
+											"\t\treturn false;",
+											"\t} else if (metric.includes(\"new\")) {",
+											"\t\treturn result.periods.find(period => period.index === 1);",
+											"\t} else {",
+											"\t\treturn result;",
+											"\t}",
+											"}",
+											"",
+											"function getValue(metric) {",
+											"    let result = measure(metric).value",
+											"    result = metric.includes(\"coverage\", \"new_coverage\") ? parseFloat(result/100).toFixed(4) : result",
+											"    return result",
+											"}",
+											"",
+											"function getBestValue(metric) {",
+											"    return measure(metric).bestValue.toString()",
+											"}",
+											"",
+											"function isNotEmpty(metric) {",
+											"\tlet result = measure(metric)",
+											"\treturn (result !== null && result !== \"\" && result !== false)",
+											"}",
+											"",
+											"if (isNotEmpty(\"coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_coverage_value`, getValue(\"coverage\"))",
+											"    pm.collectionVariables.set(`${service}_coverage_bestValue`, getBestValue(\"coverage\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, getValue(\"new_coverage\"))",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, getBestValue(\"new_coverage\"))",
+											"",
+											"} else {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, \"1\")",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, \"true\")",
+											"}",
+											"",
+											"if (isNotEmpty(\"code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_code_smells_value`, getValue(\"code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_code_smells_bestValue`, getBestValue(\"code_smells\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_code_smells_value`, getValue(\"new_code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_new_code_smells_bestValue`, getBestValue(\"new_code_smells\"))",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_id`, jsonData.component.id)",
+											"pm.collectionVariables.set(`${service}_key`, jsonData.component.key)",
+											"pm.collectionVariables.set(`${service}_name`, jsonData.component.name)",
+											"pm.collectionVariables.set(`${service}_qualifier`, jsonData.component.qualifier)",
+											"pm.collectionVariables.set(`${service}_date`, moment(jsonData.periods.first().date).utc().valueOf().toString())",
+											"",
+											"const measures = [\"coverage\", \"new_coverage\", \"code_smells\", \"new_code_smells\"]",
+											"",
+											"measures.forEach(",
+											"    measure => pm.collectionVariables.set(`${service}_metrics_${measure}_type`, jsonData.metrics.find(metric => metric.key === measure).type)",
+											")",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/measures/component?component=java%3Aprice-service&metricKeys=coverage,new_coverage,code_smells,new_code_smells&additionalFields=metrics,periods&branch=master",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"measures",
+										"component"
+									],
+									"query": [
+										{
+											"key": "component",
+											"value": "java%3Aprice-service"
+										},
+										{
+											"key": "metricKeys",
+											"value": "coverage,new_coverage,code_smells,new_code_smells"
+										},
+										{
+											"key": "additionalFields",
+											"value": "metrics,periods"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pricing-engine-metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_pricing_engine\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"\t`${service}_coverage`,",
+											"\t`${service}_new_coverage`,",
+											"\t`${service}_code_smells`,",
+											"\t`${service}_new_code_smells`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function measure(metric) {",
+											"\tlet result = jsonData.component.measures.find(measure => measure.metric === metric);",
+											"\tif (result === undefined) {",
+											"\t\treturn false;",
+											"\t} else if (metric.includes(\"new\")) {",
+											"\t\treturn result.periods.find(period => period.index === 1);",
+											"\t} else {",
+											"\t\treturn result;",
+											"\t}",
+											"}",
+											"",
+											"function getValue(metric) {",
+											"    let result = measure(metric).value",
+											"    result = metric.includes(\"coverage\", \"new_coverage\") ? parseFloat(result/100).toFixed(4) : result",
+											"    return result",
+											"}",
+											"",
+											"function getBestValue(metric) {",
+											"    return measure(metric).bestValue.toString()",
+											"}",
+											"",
+											"function isNotEmpty(metric) {",
+											"\tlet result = measure(metric)",
+											"\treturn (result !== null && result !== \"\" && result !== false)",
+											"}",
+											"",
+											"if (isNotEmpty(\"coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_coverage_value`, getValue(\"coverage\"))",
+											"    pm.collectionVariables.set(`${service}_coverage_bestValue`, getBestValue(\"coverage\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_coverage\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, getValue(\"new_coverage\"))",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, getBestValue(\"new_coverage\"))",
+											"",
+											"} else {",
+											"\tpm.collectionVariables.set(`${service}_new_coverage_value`, \"1\")",
+											"    pm.collectionVariables.set(`${service}_new_coverage_bestValue`, \"true\")",
+											"}",
+											"",
+											"if (isNotEmpty(\"code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_code_smells_value`, getValue(\"code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_code_smells_bestValue`, getBestValue(\"code_smells\"))",
+											"}",
+											"",
+											"if (isNotEmpty(\"new_code_smells\")) {",
+											"\tpm.collectionVariables.set(`${service}_new_code_smells_value`, getValue(\"new_code_smells\"))",
+											"    pm.collectionVariables.set(`${service}_new_code_smells_bestValue`, getBestValue(\"new_code_smells\"))",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_id`, jsonData.component.id)",
+											"pm.collectionVariables.set(`${service}_key`, jsonData.component.key)",
+											"pm.collectionVariables.set(`${service}_name`, jsonData.component.name)",
+											"pm.collectionVariables.set(`${service}_qualifier`, jsonData.component.qualifier)",
+											"pm.collectionVariables.set(`${service}_date`, moment(jsonData.periods.first().date).utc().valueOf().toString())",
+											"",
+											"const measures = [\"coverage\", \"new_coverage\", \"code_smells\", \"new_code_smells\"]",
+											"",
+											"measures.forEach(",
+											"    measure => pm.collectionVariables.set(`${service}_metrics_${measure}_type`, jsonData.metrics.find(metric => metric.key === measure).type)",
+											")",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/measures/component?component=java%3Apricing-engine&metricKeys=coverage,new_coverage,code_smells,new_code_smells&additionalFields=metrics,periods&branch=master",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"measures",
+										"component"
+									],
+									"query": [
+										{
+											"key": "component",
+											"value": "java%3Apricing-engine"
+										},
+										{
+											"key": "metricKeys",
+											"value": "coverage,new_coverage,code_smells,new_code_smells"
+										},
+										{
+											"key": "additionalFields",
+											"value": "metrics,periods"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "getStatuses",
+					"item": [
+						{
+							"name": "cart-calculator-service-status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_cart_calculator_service_status\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"    `${service}_branch`,",
+											"\t`${service}_quality_gate_status`,",
+											"\t`${service}_bugs`,",
+											"\t`${service}_vulnerabilities`,",
+											"\t`${service}_code_smells`,",
+											"    `${service}_analysis_date`,",
+											"    `${service}_commit`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function getBranch() {",
+											"    return jsonData.branches.find(branch => branch.name === \"master\")",
+											"}",
+											"",
+											"function qualityGateStatus() {",
+											"    return (getBranch().status.qualityGateStatus === \"OK\") ? 1 : 0",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_branch`, getBranch().name)",
+											"pm.collectionVariables.set(`${service}_quality_gate_status`, qualityGateStatus())",
+											"pm.collectionVariables.set(`${service}_bugs`, getBranch().status.bugs)",
+											"pm.collectionVariables.set(`${service}_vulnerabilities`, getBranch().status.vulnerabilities)",
+											"pm.collectionVariables.set(`${service}_code_smells`, getBranch().status.codeSmells)",
+											"pm.collectionVariables.set(`${service}_analysis_date`, moment(getBranch().analysisDate).valueOf().toString())",
+											"pm.collectionVariables.set(`${service}_commit`, getBranch().commit.sha)",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/project_branches/list?project=java%3Acart-calculator-service",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"project_branches",
+										"list"
+									],
+									"query": [
+										{
+											"key": "project",
+											"value": "java%3Acart-calculator-service"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "charge-service-status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_charge_service_status\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"    `${service}_branch`,",
+											"\t`${service}_quality_gate_status`,",
+											"\t`${service}_bugs`,",
+											"\t`${service}_vulnerabilities`,",
+											"\t`${service}_code_smells`,",
+											"    `${service}_analysis_date`,",
+											"    `${service}_commit`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function getBranch() {",
+											"    return jsonData.branches.find(branch => branch.name === \"master\")",
+											"}",
+											"",
+											"function qualityGateStatus() {",
+											"    return (getBranch().status.qualityGateStatus === \"OK\") ? 1 : 0",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_branch`, getBranch().name)",
+											"pm.collectionVariables.set(`${service}_quality_gate_status`, qualityGateStatus())",
+											"pm.collectionVariables.set(`${service}_bugs`, getBranch().status.bugs)",
+											"pm.collectionVariables.set(`${service}_vulnerabilities`, getBranch().status.vulnerabilities)",
+											"pm.collectionVariables.set(`${service}_code_smells`, getBranch().status.codeSmells)",
+											"pm.collectionVariables.set(`${service}_analysis_date`, moment(getBranch().analysisDate).valueOf().toString())",
+											"pm.collectionVariables.set(`${service}_commit`, getBranch().commit.sha)",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/project_branches/list?project=java%3Acharge-service",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"project_branches",
+										"list"
+									],
+									"query": [
+										{
+											"key": "project",
+											"value": "java%3Acharge-service"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deal-service-status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_deal_service_status\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"    `${service}_branch`,",
+											"\t`${service}_quality_gate_status`,",
+											"\t`${service}_bugs`,",
+											"\t`${service}_vulnerabilities`,",
+											"\t`${service}_code_smells`,",
+											"    `${service}_analysis_date`,",
+											"    `${service}_commit`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function getBranch() {",
+											"    return jsonData.branches.find(branch => branch.name === \"master\")",
+											"}",
+											"",
+											"function qualityGateStatus() {",
+											"    return (getBranch().status.qualityGateStatus === \"OK\") ? 1 : 0",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_branch`, getBranch().name)",
+											"pm.collectionVariables.set(`${service}_quality_gate_status`, qualityGateStatus())",
+											"pm.collectionVariables.set(`${service}_bugs`, getBranch().status.bugs)",
+											"pm.collectionVariables.set(`${service}_vulnerabilities`, getBranch().status.vulnerabilities)",
+											"pm.collectionVariables.set(`${service}_code_smells`, getBranch().status.codeSmells)",
+											"pm.collectionVariables.set(`${service}_analysis_date`, moment(getBranch().analysisDate).valueOf().toString())",
+											"pm.collectionVariables.set(`${service}_commit`, getBranch().commit.sha)",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/project_branches/list?project=java%3Adeal-service",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"project_branches",
+										"list"
+									],
+									"query": [
+										{
+											"key": "project",
+											"value": "java%3Adeal-service"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "price-service-status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_price_service_status\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"    `${service}_branch`,",
+											"\t`${service}_quality_gate_status`,",
+											"\t`${service}_bugs`,",
+											"\t`${service}_vulnerabilities`,",
+											"\t`${service}_code_smells`,",
+											"    `${service}_analysis_date`,",
+											"    `${service}_commit`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function getBranch() {",
+											"    return jsonData.branches.find(branch => branch.name === \"master\")",
+											"}",
+											"",
+											"function qualityGateStatus() {",
+											"    return (getBranch().status.qualityGateStatus === \"OK\") ? 1 : 0",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_branch`, getBranch().name)",
+											"pm.collectionVariables.set(`${service}_quality_gate_status`, qualityGateStatus())",
+											"pm.collectionVariables.set(`${service}_bugs`, getBranch().status.bugs)",
+											"pm.collectionVariables.set(`${service}_vulnerabilities`, getBranch().status.vulnerabilities)",
+											"pm.collectionVariables.set(`${service}_code_smells`, getBranch().status.codeSmells)",
+											"pm.collectionVariables.set(`${service}_analysis_date`, moment(getBranch().analysisDate).valueOf().toString())",
+											"pm.collectionVariables.set(`${service}_commit`, getBranch().commit.sha)",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/project_branches/list?project=java%3Aprice-service",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"project_branches",
+										"list"
+									],
+									"query": [
+										{
+											"key": "project",
+											"value": "java%3Aprice-service"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pricing-engine-status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_pricing_engine_status\", jsonData = pm.response.json();",
+											"",
+											"const environments = [",
+											"    `${service}_branch`,",
+											"\t`${service}_quality_gate_status`,",
+											"\t`${service}_bugs`,",
+											"\t`${service}_vulnerabilities`,",
+											"\t`${service}_code_smells`,",
+											"    `${service}_analysis_date`,",
+											"    `${service}_commit`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"function getBranch() {",
+											"    return jsonData.branches.find(branch => branch.name === \"master\")",
+											"}",
+											"",
+											"function qualityGateStatus() {",
+											"    return (getBranch().status.qualityGateStatus === \"OK\") ? 1 : 0",
+											"}",
+											"",
+											"pm.collectionVariables.set(`${service}_branch`, getBranch().name)",
+											"pm.collectionVariables.set(`${service}_quality_gate_status`, qualityGateStatus())",
+											"pm.collectionVariables.set(`${service}_bugs`, getBranch().status.bugs)",
+											"pm.collectionVariables.set(`${service}_vulnerabilities`, getBranch().status.vulnerabilities)",
+											"pm.collectionVariables.set(`${service}_code_smells`, getBranch().status.codeSmells)",
+											"pm.collectionVariables.set(`${service}_analysis_date`, moment(getBranch().analysisDate).valueOf().toString())",
+											"pm.collectionVariables.set(`${service}_commit`, getBranch().commit.sha)"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/project_branches/list?project=java%3Apricing-engine",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"project_branches",
+										"list"
+									],
+									"query": [
+										{
+											"key": "project",
+											"value": "java%3Apricing-engine"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "getAndPostIssues",
+					"item": [
+						{
+							"name": "cart-calculator-service-issues",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_cart_calculator_service\", response = pm.response.json()",
+											"",
+											"const environments = [",
+											"    `${service}_issues`,",
+											"\t`${service}_issues_total`,",
+											"\t`${service}_issues_effortTotal`,",
+											"\t`${service}_issues_debtTotal`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"// function getIssues() {",
+											"//     const issues = response.issues.first();",
+											"//     let result = (_.isEmpty(issues)) ? {} : issues",
+											"//     return encodeURIComponent(JSON.stringify(result))",
+											"// }",
+											"",
+											"// pm.collectionVariables.set(`${service}_issues`, getIssues())",
+											"pm.collectionVariables.set(`${service}_issues_total`, response.total)",
+											"pm.collectionVariables.set(`${service}_issues_effortTotal`, response.effortTotal)",
+											"pm.collectionVariables.set(`${service}_issues_debtTotal`, response.debtTotal)",
+											"pm.collectionVariables.set(`${service}_issues_date`, moment().utc().valueOf().toString())",
+											"",
+											"const INFLUXDB_BASE_URL = pm.environment.get(\"INFLUXDB_BASE_URL\") || \"influxdb:8086\";",
+											"const INFLUXDB_DATABASE = pm.environment.get(\"INFLUXDB_DATABASE\") || \"metrics\";",
+											"",
+											"// for each issue, insert into influxDB",
+											"if (!_.isEmpty(response.issues)) {",
+											"    response.issues.forEach(function(issue) {   ",
+											"        let file = issue.component.split(':')[2]",
+											"        let debt = parseInt(issue.debt.split('min')[0])",
+											"        let effort = parseInt(issue.effort.split('min')[0])",
+											"        let percent = parseFloat(effort/response.effortTotal).toFixed(4)",
+											"        let tags = _.isEmpty(issue.tags) ? false : issue.tags",
+											"        let name = issue.project.split(':')[1]",
+											"        let creationDate = moment(issue.creationDate).utc().valueOf().toString()",
+											"",
+											"        pm.sendRequest({",
+											"            url: `${INFLUXDB_BASE_URL}/write?db=${INFLUXDB_DATABASE}`, ",
+											"            method: \"POST\",",
+											"            header: {",
+											"                \"Content-Type\": \"text/plain\"",
+											"            },",
+											"            body: {",
+											"                mode: \"data-raw\",",
+											"                raw: `metrics,author=${issue.author},component=issues,file=${file},id=${issue.key},metric=${issue.type.toLowerCase()},name=${name},rule=${issue.rule},status=${issue.status},service=sonarcloud,severity=${issue.severity.toLowerCase()},type=PERCENT creationDate=${creationDate},debt=${debt},effort=${effort},line=${issue.line},message=\"${issue.message}\",tags=${tags},value=${percent} ${creationDate.concat(\"000000\")}`",
+											"            }",
+											"        }, function (error, response) {",
+											"            if (error !== null) {",
+											"                console.error(error);",
+											"            } else {",
+											"                if (response.code === 204) {",
+											"                    console.log(\"The issue was recorded successfully\");",
+											"                }",
+											"            }",
+											"        });",
+											"    })",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/issues/search?projects=java%3Acart-calculator-service&organization={{JIRA_ORGANIZATION}}&branch=master&resolved=false",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"issues",
+										"search"
+									],
+									"query": [
+										{
+											"key": "projects",
+											"value": "java%3Acart-calculator-service"
+										},
+										{
+											"key": "organization",
+											"value": "{{JIRA_ORGANIZATION}}"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										},
+										{
+											"key": "resolved",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "charge-service-issues",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_charge_service\", response = pm.response.json()",
+											"",
+											"const environments = [",
+											"    `${service}_issues`,",
+											"\t`${service}_issues_total`,",
+											"\t`${service}_issues_effortTotal`,",
+											"\t`${service}_issues_debtTotal`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"// function getIssues() {",
+											"//     const issues = response.issues.first();",
+											"//     let result = (_.isEmpty(issues)) ? {} : issues",
+											"//     return encodeURIComponent(JSON.stringify(result))",
+											"// }",
+											"",
+											"// pm.collectionVariables.set(`${service}_issues`, getIssues())",
+											"pm.collectionVariables.set(`${service}_issues_total`, response.total)",
+											"pm.collectionVariables.set(`${service}_issues_effortTotal`, response.effortTotal)",
+											"pm.collectionVariables.set(`${service}_issues_debtTotal`, response.debtTotal)",
+											"pm.collectionVariables.set(`${service}_issues_date`, moment().utc().valueOf().toString())",
+											"",
+											"const INFLUXDB_BASE_URL = pm.environment.get(\"INFLUXDB_BASE_URL\") || \"influxdb:8086\";",
+											"const INFLUXDB_DATABASE = pm.environment.get(\"INFLUXDB_DATABASE\") || \"metrics\";",
+											"",
+											"// for each issue, insert into influxDB",
+											"if (!_.isEmpty(response.issues)) {",
+											"    response.issues.forEach(function(issue) {   ",
+											"        let file = issue.component.split(':')[2]",
+											"        let debt = parseInt(issue.debt.split('min')[0])",
+											"        let effort = parseInt(issue.effort.split('min')[0])",
+											"        let percent = parseFloat(effort/response.effortTotal).toFixed(4)",
+											"        let tags = _.isEmpty(issue.tags) ? false : issue.tags",
+											"        let name = issue.project.split(':')[1]",
+											"        let creationDate = moment(issue.creationDate).utc().valueOf().toString()",
+											"",
+											"        pm.sendRequest({",
+											"            url: `${INFLUXDB_BASE_URL}/write?db=${INFLUXDB_DATABASE}`, ",
+											"            method: \"POST\",",
+											"            header: {",
+											"                \"Content-Type\": \"text/plain\"",
+											"            },",
+											"            body: {",
+											"                mode: \"data-raw\",",
+											"                raw: `metrics,author=${issue.author},component=issues,file=${file},id=${issue.key},metric=${issue.type.toLowerCase()},name=${name},rule=${issue.rule},status=${issue.status},service=sonarcloud,severity=${issue.severity.toLowerCase()},type=PERCENT creationDate=${creationDate},debt=${debt},effort=${effort},line=${issue.line},message=\"${issue.message}\",tags=${tags},value=${percent} ${creationDate.concat(\"000000\")}`",
+											"            }",
+											"        }, function (error, response) {",
+											"            if (error !== null) {",
+											"                console.error(error);",
+											"            } else {",
+											"                if (response.code === 204) {",
+											"                    console.log(\"The issue was recorded successfully\");",
+											"                }",
+											"            }",
+											"        });",
+											"    })",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/issues/search?projects=java%3Acharge-service&organization={{JIRA_ORGANIZATION}}&branch=master&resolved=false",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"issues",
+										"search"
+									],
+									"query": [
+										{
+											"key": "projects",
+											"value": "java%3Acharge-service"
+										},
+										{
+											"key": "organization",
+											"value": "{{JIRA_ORGANIZATION}}"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										},
+										{
+											"key": "resolved",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deal-service-issues",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_deal_service\", response = pm.response.json()",
+											"",
+											"const environments = [",
+											"    `${service}_issues`,",
+											"\t`${service}_issues_total`,",
+											"\t`${service}_issues_effortTotal`,",
+											"\t`${service}_issues_debtTotal`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"// function getIssues() {",
+											"//     const issues = response.issues.first();",
+											"//     let result = (_.isEmpty(issues)) ? {} : issues",
+											"//     return encodeURIComponent(JSON.stringify(result))",
+											"// }",
+											"",
+											"// pm.collectionVariables.set(`${service}_issues`, getIssues())",
+											"pm.collectionVariables.set(`${service}_issues_total`, response.total)",
+											"pm.collectionVariables.set(`${service}_issues_effortTotal`, response.effortTotal)",
+											"pm.collectionVariables.set(`${service}_issues_debtTotal`, response.debtTotal)",
+											"pm.collectionVariables.set(`${service}_issues_date`, moment().utc().valueOf().toString())",
+											"",
+											"const INFLUXDB_BASE_URL = pm.environment.get(\"INFLUXDB_BASE_URL\") || \"influxdb:8086\";",
+											"const INFLUXDB_DATABASE = pm.environment.get(\"INFLUXDB_DATABASE\") || \"metrics\";",
+											"",
+											"// for each issue, insert into influxDB",
+											"if (!_.isEmpty(response.issues)) {",
+											"    response.issues.forEach(function(issue) {   ",
+											"        let file = issue.component.split(':')[2]",
+											"        let debt = parseInt(issue.debt.split('min')[0])",
+											"        let effort = parseInt(issue.effort.split('min')[0])",
+											"        let percent = parseFloat(effort/response.effortTotal).toFixed(4)",
+											"        let tags = _.isEmpty(issue.tags) ? false : issue.tags",
+											"        let name = issue.project.split(':')[1]",
+											"        let creationDate = moment(issue.creationDate).utc().valueOf().toString()",
+											"",
+											"        pm.sendRequest({",
+											"            url: `${INFLUXDB_BASE_URL}/write?db=${INFLUXDB_DATABASE}`, ",
+											"            method: \"POST\",",
+											"            header: {",
+											"                \"Content-Type\": \"text/plain\"",
+											"            },",
+											"            body: {",
+											"                mode: \"data-raw\",",
+											"                raw: `metrics,author=${issue.author},component=issues,file=${file},id=${issue.key},metric=${issue.type.toLowerCase()},name=${name},rule=${issue.rule},status=${issue.status},service=sonarcloud,severity=${issue.severity.toLowerCase()},type=PERCENT creationDate=${creationDate},debt=${debt},effort=${effort},line=${issue.line},message=\"${issue.message}\",tags=${tags},value=${percent} ${creationDate.concat(\"000000\")}`",
+											"            }",
+											"        }, function (error, response) {",
+											"            if (error !== null) {",
+											"                console.error(error);",
+											"            } else {",
+											"                if (response.code === 204) {",
+											"                    console.log(\"The issue was recorded successfully\");",
+											"                }",
+											"            }",
+											"        });",
+											"    })",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/issues/search?projects=java%3Adeal-service&organization={{JIRA_ORGANIZATION}}&branch=master&resolved=false",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"issues",
+										"search"
+									],
+									"query": [
+										{
+											"key": "projects",
+											"value": "java%3Adeal-service"
+										},
+										{
+											"key": "organization",
+											"value": "{{JIRA_ORGANIZATION}}"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										},
+										{
+											"key": "resolved",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "price-service-issues",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_price_service\", response = pm.response.json()",
+											"",
+											"const environments = [",
+											"    `${service}_issues`,",
+											"\t`${service}_issues_total`,",
+											"\t`${service}_issues_effortTotal`,",
+											"\t`${service}_issues_debtTotal`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"// function getIssues() {",
+											"//     const issues = response.issues.first();",
+											"//     let result = (_.isEmpty(issues)) ? {} : issues",
+											"//     return encodeURIComponent(JSON.stringify(result))",
+											"// }",
+											"",
+											"// pm.collectionVariables.set(`${service}_issues`, getIssues())",
+											"pm.collectionVariables.set(`${service}_issues_total`, response.total)",
+											"pm.collectionVariables.set(`${service}_issues_effortTotal`, response.effortTotal)",
+											"pm.collectionVariables.set(`${service}_issues_debtTotal`, response.debtTotal)",
+											"pm.collectionVariables.set(`${service}_issues_date`, moment().utc().valueOf().toString())",
+											"",
+											"const INFLUXDB_BASE_URL = pm.environment.get(\"INFLUXDB_BASE_URL\") || \"influxdb:8086\";",
+											"const INFLUXDB_DATABASE = pm.environment.get(\"INFLUXDB_DATABASE\") || \"metrics\";",
+											"",
+											"// for each issue, insert into influxDB",
+											"if (!_.isEmpty(response.issues)) {",
+											"    response.issues.forEach(function(issue) {   ",
+											"        let file = issue.component.split(':')[2]",
+											"        let debt = parseInt(issue.debt.split('min')[0])",
+											"        let effort = parseInt(issue.effort.split('min')[0])",
+											"        let percent = parseFloat(effort/response.effortTotal).toFixed(4)",
+											"        let tags = _.isEmpty(issue.tags) ? false : issue.tags",
+											"        let name = issue.project.split(':')[1]",
+											"        let creationDate = moment(issue.creationDate).utc().valueOf().toString()",
+											"",
+											"        pm.sendRequest({",
+											"            url: `${INFLUXDB_BASE_URL}/write?db=${INFLUXDB_DATABASE}`, ",
+											"            method: \"POST\",",
+											"            header: {",
+											"                \"Content-Type\": \"text/plain\"",
+											"            },",
+											"            body: {",
+											"                mode: \"data-raw\",",
+											"                raw: `metrics,author=${issue.author},component=issues,file=${file},id=${issue.key},metric=${issue.type.toLowerCase()},name=${name},rule=${issue.rule},status=${issue.status},service=sonarcloud,severity=${issue.severity.toLowerCase()},type=PERCENT creationDate=${creationDate},debt=${debt},effort=${effort},line=${issue.line},message=\"${issue.message}\",tags=${tags},value=${percent} ${creationDate.concat(\"000000\")}`",
+											"            }",
+											"        }, function (error, response) {",
+											"            if (error !== null) {",
+											"                console.error(error);",
+											"            } else {",
+											"                if (response.code === 204) {",
+											"                    console.log(\"The issue was recorded successfully\");",
+											"                }",
+											"            }",
+											"        });",
+											"    })",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/issues/search?projects=java%3Aprice-service&organization={{JIRA_ORGANIZATION}}&branch=master&resolved=false",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"issues",
+										"search"
+									],
+									"query": [
+										{
+											"key": "projects",
+											"value": "java%3Aprice-service"
+										},
+										{
+											"key": "organization",
+											"value": "{{JIRA_ORGANIZATION}}"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										},
+										{
+											"key": "resolved",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pricing-engine-issues",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const service = \"sonarcloud_pricing_engine\", response = pm.response.json()",
+											"",
+											"const environments = [",
+											"    `${service}_issues`,",
+											"\t`${service}_issues_total`,",
+											"\t`${service}_issues_effortTotal`,",
+											"\t`${service}_issues_debtTotal`",
+											"]",
+											"",
+											"environments.forEach(env => pm.collectionVariables.unset(env))",
+											"",
+											"// function getIssues() {",
+											"//     const issues = response.issues.first();",
+											"//     let result = (_.isEmpty(issues)) ? {} : issues",
+											"//     return encodeURIComponent(JSON.stringify(result))",
+											"// }",
+											"",
+											"// pm.collectionVariables.set(`${service}_issues`, getIssues())",
+											"pm.collectionVariables.set(`${service}_issues_total`, response.total)",
+											"pm.collectionVariables.set(`${service}_issues_effortTotal`, response.effortTotal)",
+											"pm.collectionVariables.set(`${service}_issues_debtTotal`, response.debtTotal)",
+											"pm.collectionVariables.set(`${service}_issues_date`, moment().utc().valueOf().toString())",
+											"",
+											"const INFLUXDB_BASE_URL = pm.environment.get(\"INFLUXDB_BASE_URL\") || \"influxdb:8086\";",
+											"const INFLUXDB_DATABASE = pm.environment.get(\"INFLUXDB_DATABASE\") || \"metrics\";",
+											"",
+											"// for each issue, insert into influxDB",
+											"if (!_.isEmpty(response.issues)) {",
+											"    response.issues.forEach(function(issue) {   ",
+											"        let file = issue.component.split(':')[2]",
+											"        let debt = parseInt(issue.debt.split('min')[0])",
+											"        let effort = parseInt(issue.effort.split('min')[0])",
+											"        let percent = parseFloat(effort/response.effortTotal).toFixed(4)",
+											"        let tags = _.isEmpty(issue.tags) ? false : issue.tags",
+											"        let name = issue.project.split(':')[1]",
+											"        let creationDate = moment(issue.creationDate).utc().valueOf().toString()",
+											"",
+											"        pm.sendRequest({",
+											"            url: `${INFLUXDB_BASE_URL}/write?db=${INFLUXDB_DATABASE}`, ",
+											"            method: \"POST\",",
+											"            header: {",
+											"                \"Content-Type\": \"text/plain\"",
+											"            },",
+											"            body: {",
+											"                mode: \"data-raw\",",
+											"                raw: `metrics,author=${issue.author},component=issues,file=${file},id=${issue.key},metric=${issue.type.toLowerCase()},name=${name},rule=${issue.rule},status=${issue.status},service=sonarcloud,severity=${issue.severity.toLowerCase()},type=PERCENT creationDate=${creationDate},debt=${debt},effort=${effort},line=${issue.line},message=\"${issue.message}\",tags=${tags},value=${percent} ${creationDate.concat(\"000000\")}`",
+											"            }",
+											"        }, function (error, response) {",
+											"            if (error !== null) {",
+											"                console.error(error);",
+											"            } else {",
+											"                if (response.code === 204) {",
+											"                    console.log(\"The issue was recorded successfully\");",
+											"                }",
+											"            }",
+											"        });",
+											"    })",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SONAR_BASE_URL}}/issues/search?projects=java%3Apricing-engine&organization={{JIRA_ORGANIZATION}}&branch=master&resolved=false",
+									"host": [
+										"{{SONAR_BASE_URL}}"
+									],
+									"path": [
+										"issues",
+										"search"
+									],
+									"query": [
+										{
+											"key": "projects",
+											"value": "java%3Apricing-engine"
+										},
+										{
+											"key": "organization",
+											"value": "{{JIRA_ORGANIZATION}}"
+										},
+										{
+											"key": "branch",
+											"value": "master"
+										},
+										{
+											"key": "resolved",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "username",
+						"value": "{{SONAR_API_KEY}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Required Packages",
+							"let moment = require(\"moment\")",
+							"",
+							"let startDate = moment().add(-30, \"days\").format(\"YYYY-MM-DD\")",
+							"",
+							"// Create date variables",
+							"// pm.variables.set(\"date\", moment().format(\"YYYY-MM-DD\"));",
+							"pm.variables.set(\"startDate\", startDate); // \"2021-12-09\"",
+							"// pm.variables.set(\"endDate\", moment().add(1, \"months\")); // \"2021-01-10T20:45:12.003Z\"",
+							"",
+							"",
+							"// pm.collectionVariables.clear();"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "jira",
+			"item": [
+				{
+					"name": "getIssues",
+					"item": [
+						{
+							"name": "Get Issues from Jira Filter",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let moment = require(\"moment\");",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"\tpm.response.to.have.status(200);",
+											"});",
+											"",
+											"const response = pm.response.json()",
+											"",
+											"const INFLUXDB_BASE_URL = pm.environment.get(\"INFLUXDB_BASE_URL\") || \"influx:8086\";",
+											"const INFLUXDB_DATABASE = pm.environment.get(\"INFLUXDB_DATABASE\") || \"metrics\";",
+											"",
+											"function setValueToNullFields(attribute, value, content = false) {",
+											"    return _.isNull(attribute) ? value : (content ? attribute.value : attribute)",
+											"}",
+											"",
+											"// for each issue, insert into influxDB",
+											"if (!_.isEmpty(response.issues)) {",
+											"    response.issues.forEach(function(issue) {   ",
+											"        let fields = issue.fields",
+											"",
+											"        let id = issue.id",
+											"        let key = issue.key",
+											"        let issueType = fields.issuetype.name",
+											"        let issueSubtask = fields.issuetype.subtask.toString()",
+											"",
+											"        let projectId = fields.project.id",
+											"        let projectKey = fields.project.key",
+											"        let projectName = fields.project.name",
+											"",
+											"        let environment = _.isNull(fields.customfield_13464) ? false : fields.customfield_13464.first().value",
+											"        let developmentPhase = _.isNull(fields.customfield_10704) ? false : fields.customfield_10704.value",
+											"",
+											"        let aggregateProgressPercent = setValueToNullFields(fields.aggregateprogress.percent, 0).toString()",
+											"",
+											"        let timeSpent = setValueToNullFields(fields.timespent, 0)",
+											"        let timeEstimate =  setValueToNullFields(fields.timeestimate, 0)",
+											"        let aggregateTimeSpent = setValueToNullFields(fields.aggregatetimespent, 0)",
+											"",
+											"        let teamName = _.isNull(fields.customfield_13230) ? false : fields.customfield_13230.value",
+											"        let summary = fields.summary",
+											"        let bugType = _.isNull(fields.customfield_10700) ? false : fields.customfield_10700.value",
+											"        let priority = fields.priority.name",
+											"        let frequency = _.isNull(fields.customfield_13457) ? false :  fields.customfield_13457.value",
+											"        let businessComponent = _.isNull(fields.customfield_13468) ? false :  fields.customfield_13468.value.toString()",
+											"        let rootCause = _.isNull(fields.customfield_13477) ? false :  fields.customfield_13477.value",
+											"        let rootCauseAnalysis = _.isNull(fields.customfield_10706) ? false : fields.customfield_10706.content.first().content.first().text",
+											"        let creator = fields.creator.displayName",
+											"        let reporter = fields.reporter.displayName",
+											"        let assignee = _.isNull(fields.assignee) ? false : fields.assignee.displayName",
+											"        let status = fields.status.name",
+											"        let sprints = _.isNull(fields.customfield_10007) ? false : _.map(fields.customfield_10007, \"name\")",
+											"",
+											"        let created = moment(fields.created).utc().valueOf().toString()",
+											"",
+											"        pm.sendRequest({",
+											"            url: `${INFLUXDB_BASE_URL}/write?db=${INFLUXDB_DATABASE}`, ",
+											"            method: \"POST\",",
+											"            header: {",
+											"                \"Content-Type\": \"text/plain\"",
+											"            },",
+											"            body: {",
+											"                mode: \"data-raw\",",
+											"                raw: `metrics,component=issues,issueSubtask=${issueSubtask},metric=bugs,service=jira,type=SECONDS assignee=\"${assignee}\",issueType=\"${issueType}\",key=\"${key}\",priority=\"${priority}\",rootCause=\"${rootCause}\",rootCauseAnalysis=\"${rootCauseAnalysis}\",bugType=\"${bugType}\",businessComponent=${businessComponent},created=${created},creator=\"${creator}\",developmentPhase=\"${developmentPhase}\",environment=\"${environment}\",frequency=\"${frequency}\",id=${id},aggregateProgressPercent=${aggregateProgressPercent},projectId=${projectId},projectKey=\"${projectKey}\",projectName=\"${projectName}\",reporter=\"${reporter}\",status=\"${status}\",sprints=\"${sprints}\",summary=\"${summary}\",teamName=\"${teamName}\",timeEstimate=${timeEstimate},timeSpent=${timeSpent},value=${aggregateTimeSpent} ${created}`",
+											"            }",
+											"        }, function (error, response) {",
+											"            if (error !== null) {",
+											"                console.error(error);",
+											"            } else {",
+											"                if (response.code === 204) {",
+											"                    console.log(\"The issue was recorded successfully\");",
+											"                }",
+											"            }",
+											"        });",
+											"    })",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"jql\": \"{{FILTER}}\",\n    \"fields\": [\n        \"aggregatetimespent\",\n        \"aggregateprogress\",\n        \"assignee\",\n        \"{{bug_type}}\",\n        \"{{business_component}}\",\n        \"created\",\n        \"creator\",\n        \"{{development_phase}}\",\n        \"{{environment}}\",\n        \"{{frequency}}\",\n        \"issuetype\",\n        \"labels\",\n        \"priority\",\n        \"progress\",\n        \"project\",\n        \"reporter\",\n        \"resolutiondate\",\n        \"{{root_cause}}\",\n        \"{{root_cause_analysis}}\",\n        \"{{sprints}}\",\n        \"status\",\n        \"summary\",\n        \"{{team_name}}\",\n        \"timetracking\",\n        \"timeestimate\",\n        \"timespent\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{JIRA_BASE_URL}}/rest/api/3/search",
+									"host": [
+										"{{JIRA_BASE_URL}}"
+									],
+									"path": [
+										"rest",
+										"api",
+										"3",
+										"search"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{JIRA_API_TOKEN}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{JIRA_USER}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/",
+							"",
+							"pm.variables.set(\"FILTER\", environment.JIRA_FILTER.replaceAll(\"\\\"\", \"\\'\"))",
+							"",
+							"pm.variables.set(\"bug_type\", \"customfield_10700\")",
+							"pm.variables.set(\"root_cause_analysis\", \"customfield_10706\")",
+							"pm.variables.set(\"team_name\", \"customfield_13230\")",
+							"pm.variables.set(\"environment\", \"customfield_13464\")",
+							"pm.variables.set(\"root_cause\", \"customfield_13477\")",
+							"",
+							"pm.variables.set(\"development_phase\", \"customfield_10704\")",
+							"pm.variables.set(\"business_component\", \"customfield_13468\")",
+							"",
+							"pm.variables.set(\"frequency\", \"customfield_13457\")",
+							"pm.variables.set(\"sprints\", \"customfield_10007\") // array json [id, name]"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "pyramid",
+			"item": [
+				{
+					"name": "Generate Google OAuth2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.info(pm.response.json().affirmation)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "clientSecret",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "https://www.googleapis.com/auth/spreadsheets",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://accounts.google.com/o/oauth2/token",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "https://accounts.google.com/o/oauth2/auth",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://www.getpostman.com/oauth2/callback",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "accessToken",
+									"value": "ya29.A0ARrdaM8UU32X2VZx4V3WLHCe324KVB9MA1GDWm7RJ-NjS0rMw5Up2khl3JgptV26rrZRYaScOLqvk9JTtUhtZ8spjFsIPhlohQCtc-KArkL-hQwcPTJ_W595kEErAEgPxM8OpytUU1kNOV_dWuEx6LQP9MnRvA",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "queryParams",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "Google OAuth getpostman",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.affirmations.dev",
+							"protocol": "https",
+							"host": [
+								"www",
+								"affirmations",
+								"dev"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test-pyramid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/* This script auto-generates a Google OAuth token from a Service Account key,",
+									" * and stores that token in accessToken variable in Postman.",
+									" *",
+									" * Prior to invoking it, please paste the contents of the key JSON",
+									" * into serviceAccountKey variable in a Postman environment.",
+									" *",
+									" * Then, paste the script into the \"Pre-request Script\" section",
+									" * of a Postman request or collection.",
+									" *",
+									" * The script will cache and reuse the token until it's within",
+									" * a margin of expiration defined in EXPIRES_MARGIN.",
+									" *",
+									" * Thanks to:",
+									" * https://paw.cloud/docs/examples/google-service-apis",
+									" * https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests",
+									" * https://gist.github.com/madebysid/b57985b0649d3407a7aa9de1bd327990",
+									" * https://github.com/postmanlabs/postman-app-support/issues/1607#issuecomment-401611119",
+									" */",
+									"",
+									"const ENV_SERVICE_ACCOUNT_KEY = 'GOOGLE_SHEETS_SERVICE_ACCOUNT_KEY';",
+									"const ENV_JS_RSA_SIGN = 'GOOGLE_SHEETS_JS_RSA_SIGN';",
+									"const ENV_TOKEN_EXPIRES_AT = 'GOOGLE_SHEETS_TOKEN_EXPIRES_AT';",
+									"const ENV_ACCESS_TOKEN = 'GOOGLE_SHEETS_ACCESS_TOKEN';",
+									"",
+									"const JS_RSA_SIGN_SRC = 'https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js';",
+									"const GOOGLE_OAUTH = 'https://www.googleapis.com/oauth2/v4/token';",
+									"",
+									"// add/remove your own scopes as needed",
+									"const SCOPES = [",
+									"    'https://www.googleapis.com/auth/spreadsheets'",
+									"];",
+									"",
+									"const EXPIRES_MARGIN = 300; // seconds before expiration",
+									"",
+									"const getEnv = name =>",
+									"    pm.environment.get(name);",
+									"",
+									"const getCollectionEnv = name =>",
+									"    pm.collectionVariables.get(name);",
+									"",
+									"const setCollectiontEnv = (name, value) =>",
+									"    pm.collectionVariables.set(name, value);",
+									"",
+									"const setEnv = (name, value) =>",
+									"    pm.environment.set(name, value);",
+									"",
+									"const getJWS = callback => {",
+									"    // workaround for compatibility with jsrsasign",
+									"    const navigator = {};",
+									"    const window = {};",
+									"",
+									"    let jsrsasign = getCollectionEnv(ENV_JS_RSA_SIGN);",
+									"    if (jsrsasign) {",
+									"        eval(jsrsasign);",
+									"        return callback(null, KJUR.jws.JWS);",
+									"    }",
+									"",
+									"    pm.sendRequest(JS_RSA_SIGN_SRC, (err, res) => {",
+									"        if (err) return callback(err);",
+									"",
+									"        jsrsasign = res.text();",
+									"        setCollectiontEnv(ENV_JS_RSA_SIGN, jsrsasign);",
+									"        eval(jsrsasign);",
+									"        callback(null, KJUR.jws.JWS);",
+									"    });",
+									"};",
+									"",
+									"const getJwt = ({ client_email, private_key }, iat, callback) => {",
+									"    getJWS((err, JWS) => {",
+									"        if (err) return callback(err);",
+									"",
+									"        const header = {",
+									"            typ: 'JWT',",
+									"            alg: 'RS256',",
+									"        };",
+									"",
+									"        const exp = iat + 3600;",
+									"        const payload = {",
+									"            aud: GOOGLE_OAUTH,",
+									"            iss: client_email,",
+									"            scope: SCOPES.join(' '),",
+									"            iat,",
+									"            exp,",
+									"        };",
+									"",
+									"        const jwt = JWS.sign(null, header, payload, private_key);",
+									"        callback(null, jwt, exp);",
+									"    });",
+									"};",
+									"",
+									"const getToken = (serviceAccountKey, callback) => {",
+									"    const now = Math.floor(Date.now() / 1000);",
+									"    if (now + EXPIRES_MARGIN < getEnv(ENV_TOKEN_EXPIRES_AT)) {",
+									"        return callback();",
+									"    }",
+									"",
+									"    getJwt(serviceAccountKey, now, (err, jwt, exp) => {",
+									"        if (err) return callback(err);",
+									"",
+									"        const req = {",
+									"            url: GOOGLE_OAUTH,",
+									"            method: 'POST',",
+									"            header: {",
+									"                'Content-Type': 'application/x-www-form-urlencoded',",
+									"            },",
+									"            body: {",
+									"              mode: 'urlencoded',",
+									"              urlencoded: [{",
+									"                  key: 'grant_type',",
+									"                  value: 'urn:ietf:params:oauth:grant-type:jwt-bearer',",
+									"              },{",
+									"                  key: 'assertion',",
+									"                  value: jwt,",
+									"              }],",
+									"            },",
+									"        };",
+									"",
+									"        pm.sendRequest(req, (err, res) => {",
+									"            if (err) return callback(err);",
+									"",
+									"            const accessToken = res.json().access_token;",
+									"            setEnv(ENV_ACCESS_TOKEN, accessToken);",
+									"            setEnv(ENV_TOKEN_EXPIRES_AT, exp);",
+									"            callback();",
+									"        });",
+									"    });",
+									"};",
+									"",
+									"const getServiceAccountKey = callback => {",
+									"    try {",
+									"        const keyMaterial = getEnv(ENV_SERVICE_ACCOUNT_KEY);",
+									"        const serviceAccountKey = JSON.parse(keyMaterial);",
+									"        callback(null, serviceAccountKey);",
+									"    } catch (err) {",
+									"        callback(err);",
+									"    }",
+									"};",
+									"",
+									"getServiceAccountKey((err, serviceAccountKey) => {",
+									"    if (err) throw err;",
+									"",
+									"    getToken(serviceAccountKey, err => {",
+									"        if (err) throw err;",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let moment = require(\"moment\");",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"\tpm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json()",
+									"",
+									"const INFLUXDB_BASE_URL = pm.environment.get(\"INFLUXDB_BASE_URL\") || \"influx:8086\";",
+									"const INFLUXDB_DATABASE = pm.environment.get(\"INFLUXDB_DATABASE\") || \"metrics\";",
+									"",
+									"// for each level, insert into influxDB",
+									"if (!_.isEmpty(response.values)) {",
+									"    response.values.forEach(function(level) {   ",
+									"        let testType = level[0].toLowerCase().replaceAll(\"-\", \"_\")",
+									"        let current = level[1]",
+									"        let previous = level[2]",
+									"        let vo = level[4]",
+									"",
+									"        pm.sendRequest({",
+									"            url: `${INFLUXDB_BASE_URL}/write?db=${INFLUXDB_DATABASE}`, ",
+									"            method: \"POST\",",
+									"            header: {",
+									"                \"Content-Type\": \"text/plain\"",
+									"            },",
+									"            body: {",
+									"                mode: \"data-raw\",",
+									"                raw: `metrics,component=pyramid,metric=${testType},service=google_sheets,type=INT previous=${previous},value=${current},vo=${vo} 0`",
+									"            }",
+									"        }, function (error, response) {",
+									"            if (error !== null) {",
+									"                console.error(error);",
+									"            } else {",
+									"                if (response.code === 204) {",
+									"                    console.log(\"The pyramid was recorded successfully\");",
+									"                }",
+									"            }",
+									"        });",
+									"    })",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{GOOGLE_SHEETS_ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{GOOGLE_SHEETS_BASE_URL}}/:spreadsheetId/values/:range?majorDimension=ROWS",
+							"host": [
+								"{{GOOGLE_SHEETS_BASE_URL}}"
+							],
+							"path": [
+								":spreadsheetId",
+								"values",
+								":range"
+							],
+							"query": [
+								{
+									"key": "majorDimension",
+									"value": "ROWS"
+								}
+							],
+							"variable": [
+								{
+									"key": "spreadsheetId",
+									"value": "{{GOOGLE_SHEETS_SHEET_ID}}"
+								},
+								{
+									"key": "range",
+									"value": "{{GOOGLE_SHEETS_SHEET_RANGE}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "influxDB",
+			"item": [
+				{
+					"name": "sonarcloud",
+					"item": [
+						{
+							"name": "postMetrics",
+							"item": [
+								{
+									"name": "cart-calculator-service-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,component=measures,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=coverage,name={{sonarcloud_cart_calculator_service_name}},qualifier={{sonarcloud_cart_calculator_service_qualifier}},type={{sonarcloud_cart_calculator_service_metrics_coverage_type}},service=sonarcloud bestValue={{sonarcloud_cart_calculator_service_coverage_bestValue}},value={{sonarcloud_cart_calculator_service_coverage_value}} {{sonarcloud_cart_calculator_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=new_coverage,name={{sonarcloud_cart_calculator_service_name}},qualifier={{sonarcloud_cart_calculator_service_qualifier}},type={{sonarcloud_cart_calculator_service_metrics_new_coverage_type}},service=sonarcloud bestValue={{sonarcloud_cart_calculator_service_new_coverage_bestValue}},value={{sonarcloud_cart_calculator_service_new_coverage_value}} {{sonarcloud_cart_calculator_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=code_smells,name={{sonarcloud_cart_calculator_service_name}},qualifier={{sonarcloud_cart_calculator_service_qualifier}},type={{sonarcloud_cart_calculator_service_metrics_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_cart_calculator_service_code_smells_bestValue}},value={{sonarcloud_cart_calculator_service_code_smells_value}} {{sonarcloud_cart_calculator_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=new_code_smells,name={{sonarcloud_cart_calculator_service_name}},qualifier={{sonarcloud_cart_calculator_service_qualifier}},type={{sonarcloud_cart_calculator_service_metrics_new_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_cart_calculator_service_new_code_smells_bestValue}},value={{sonarcloud_cart_calculator_service_new_code_smells_value}} {{sonarcloud_cart_calculator_service_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "charge-service-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,component=measures,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=coverage,name={{sonarcloud_charge_service_name}},qualifier={{sonarcloud_charge_service_qualifier}},type={{sonarcloud_charge_service_metrics_coverage_type}},service=sonarcloud bestValue={{sonarcloud_charge_service_coverage_bestValue}},value={{sonarcloud_charge_service_coverage_value}} {{sonarcloud_charge_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=new_coverage,name={{sonarcloud_charge_service_name}},qualifier={{sonarcloud_charge_service_qualifier}},type={{sonarcloud_charge_service_metrics_new_coverage_type}},service=sonarcloud bestValue={{sonarcloud_charge_service_new_coverage_bestValue}},value={{sonarcloud_charge_service_new_coverage_value}} {{sonarcloud_charge_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=code_smells,name={{sonarcloud_charge_service_name}},qualifier={{sonarcloud_charge_service_qualifier}},type={{sonarcloud_charge_service_metrics_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_charge_service_code_smells_bestValue}},value={{sonarcloud_charge_service_code_smells_value}} {{sonarcloud_charge_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=new_code_smells,name={{sonarcloud_charge_service_name}},qualifier={{sonarcloud_charge_service_qualifier}},type={{sonarcloud_charge_service_metrics_new_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_charge_service_new_code_smells_bestValue}},value={{sonarcloud_charge_service_new_code_smells_value}} {{sonarcloud_charge_service_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "deal-service-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,component=measures,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=coverage,name={{sonarcloud_deal_service_name}},qualifier={{sonarcloud_deal_service_qualifier}},type={{sonarcloud_deal_service_metrics_coverage_type}},service=sonarcloud bestValue={{sonarcloud_deal_service_coverage_bestValue}},value={{sonarcloud_deal_service_coverage_value}} {{sonarcloud_deal_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=new_coverage,name={{sonarcloud_deal_service_name}},qualifier={{sonarcloud_deal_service_qualifier}},type={{sonarcloud_deal_service_metrics_new_coverage_type}},service=sonarcloud bestValue={{sonarcloud_deal_service_new_coverage_bestValue}},value={{sonarcloud_deal_service_new_coverage_value}} {{sonarcloud_deal_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=code_smells,name={{sonarcloud_deal_service_name}},qualifier={{sonarcloud_deal_service_qualifier}},type={{sonarcloud_deal_service_metrics_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_deal_service_code_smells_bestValue}},value={{sonarcloud_deal_service_code_smells_value}} {{sonarcloud_deal_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=new_code_smells,name={{sonarcloud_deal_service_name}},qualifier={{sonarcloud_deal_service_qualifier}},type={{sonarcloud_deal_service_metrics_new_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_deal_service_new_code_smells_bestValue}},value={{sonarcloud_deal_service_new_code_smells_value}} {{sonarcloud_deal_service_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "price-service-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,component=measures,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=coverage,name={{sonarcloud_price_service_name}},qualifier={{sonarcloud_price_service_qualifier}},type={{sonarcloud_price_service_metrics_coverage_type}},service=sonarcloud bestValue={{sonarcloud_price_service_coverage_bestValue}},value={{sonarcloud_price_service_coverage_value}} {{sonarcloud_price_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=new_coverage,name={{sonarcloud_price_service_name}},qualifier={{sonarcloud_price_service_qualifier}},type={{sonarcloud_price_service_metrics_new_coverage_type}},service=sonarcloud bestValue={{sonarcloud_price_service_new_coverage_bestValue}},value={{sonarcloud_price_service_new_coverage_value}} {{sonarcloud_price_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=code_smells,name={{sonarcloud_price_service_name}},qualifier={{sonarcloud_price_service_qualifier}},type={{sonarcloud_price_service_metrics_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_price_service_code_smells_bestValue}},value={{sonarcloud_price_service_code_smells_value}} {{sonarcloud_price_service_date}}\n\nmetrics,component=measures,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=new_code_smells,name={{sonarcloud_price_service_name}},qualifier={{sonarcloud_price_service_qualifier}},type={{sonarcloud_price_service_metrics_new_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_price_service_new_code_smells_bestValue}},value={{sonarcloud_price_service_new_code_smells_value}} {{sonarcloud_price_service_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "pricing-engine-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,component=measures,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=coverage,name={{sonarcloud_pricing_engine_name}},qualifier={{sonarcloud_pricing_engine_qualifier}},type={{sonarcloud_pricing_engine_metrics_coverage_type}},service=sonarcloud bestValue={{sonarcloud_pricing_engine_coverage_bestValue}},value={{sonarcloud_pricing_engine_coverage_value}} {{sonarcloud_pricing_engine_date}}\n\nmetrics,component=measures,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=new_coverage,name={{sonarcloud_pricing_engine_name}},qualifier={{sonarcloud_pricing_engine_qualifier}},type={{sonarcloud_pricing_engine_metrics_new_coverage_type}},service=sonarcloud bestValue={{sonarcloud_pricing_engine_new_coverage_bestValue}},value={{sonarcloud_pricing_engine_new_coverage_value}} {{sonarcloud_pricing_engine_date}}\n\nmetrics,component=measures,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=code_smells,name={{sonarcloud_pricing_engine_name}},qualifier={{sonarcloud_pricing_engine_qualifier}},type={{sonarcloud_pricing_engine_metrics_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_pricing_engine_code_smells_bestValue}},value={{sonarcloud_pricing_engine_code_smells_value}} {{sonarcloud_pricing_engine_date}}\n\nmetrics,component=measures,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=new_code_smells,name={{sonarcloud_pricing_engine_name}},qualifier={{sonarcloud_pricing_engine_qualifier}},type={{sonarcloud_pricing_engine_metrics_new_code_smells_type}},service=sonarcloud bestValue={{sonarcloud_pricing_engine_new_code_smells_bestValue}},value={{sonarcloud_pricing_engine_new_code_smells_value}} {{sonarcloud_pricing_engine_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "postStatuses",
+							"item": [
+								{
+									"name": "cart-calculator-service-status",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,branch={{sonarcloud_cart_calculator_service_status_branch}},commit={{sonarcloud_cart_calculator_service_status_commit}},component=statuses,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=quality_gate_status,name={{sonarcloud_cart_calculator_service_name}},type=INT,service=sonarcloud value={{sonarcloud_cart_calculator_service_status_quality_gate_status}} {{sonarcloud_cart_calculator_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_cart_calculator_service_status_branch}},commit={{sonarcloud_cart_calculator_service_status_commit}},component=statuses,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=bugs,name={{sonarcloud_cart_calculator_service_name}},type=INT,service=sonarcloud value={{sonarcloud_cart_calculator_service_status_bugs}} {{sonarcloud_cart_calculator_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_cart_calculator_service_status_branch}},commit={{sonarcloud_cart_calculator_service_status_commit}},component=statuses,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=vulnerabilities,name={{sonarcloud_cart_calculator_service_name}},type=INT,service=sonarcloud value={{sonarcloud_cart_calculator_service_status_vulnerabilities}} {{sonarcloud_cart_calculator_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_cart_calculator_service_status_branch}},commit={{sonarcloud_cart_calculator_service_status_commit}},component=statuses,id={{sonarcloud_cart_calculator_service_id}},key={{sonarcloud_cart_calculator_service_key}},metric=code_smells,name={{sonarcloud_cart_calculator_service_name}},type=INT,service=sonarcloud value={{sonarcloud_cart_calculator_service_status_code_smells}} {{sonarcloud_cart_calculator_service_status_analysis_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "charge-service-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,branch={{sonarcloud_charge_service_status_branch}},commit={{sonarcloud_charge_service_status_commit}},component=statuses,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=quality_gate_status,name={{sonarcloud_charge_service_name}},type=INT,service=sonarcloud value={{sonarcloud_charge_service_status_quality_gate_status}} {{sonarcloud_charge_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_charge_service_status_branch}},commit={{sonarcloud_charge_service_status_commit}},component=statuses,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=bugs,name={{sonarcloud_charge_service_name}},type=INT,service=sonarcloud value={{sonarcloud_charge_service_status_bugs}} {{sonarcloud_charge_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_charge_service_status_branch}},commit={{sonarcloud_charge_service_status_commit}},component=statuses,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=vulnerabilities,name={{sonarcloud_charge_service_name}},type=INT,service=sonarcloud value={{sonarcloud_charge_service_status_vulnerabilities}} {{sonarcloud_charge_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_charge_service_status_branch}},commit={{sonarcloud_charge_service_status_commit}},component=statuses,id={{sonarcloud_charge_service_id}},key={{sonarcloud_charge_service_key}},metric=code_smells,name={{sonarcloud_charge_service_name}},type=INT,service=sonarcloud value={{sonarcloud_charge_service_status_code_smells}} {{sonarcloud_charge_service_status_analysis_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "deal-service-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,branch={{sonarcloud_deal_service_status_branch}},commit={{sonarcloud_deal_service_status_commit}},component=statuses,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=quality_gate_status,name={{sonarcloud_deal_service_name}},type=INT,service=sonarcloud value={{sonarcloud_deal_service_status_quality_gate_status}} {{sonarcloud_deal_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_deal_service_status_branch}},commit={{sonarcloud_deal_service_status_commit}},component=statuses,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=bugs,name={{sonarcloud_deal_service_name}},type=INT,service=sonarcloud value={{sonarcloud_deal_service_status_bugs}} {{sonarcloud_deal_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_deal_service_status_branch}},commit={{sonarcloud_deal_service_status_commit}},component=statuses,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=vulnerabilities,name={{sonarcloud_deal_service_name}},type=INT,service=sonarcloud value={{sonarcloud_deal_service_status_vulnerabilities}} {{sonarcloud_deal_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_deal_service_status_branch}},commit={{sonarcloud_deal_service_status_commit}},component=statuses,id={{sonarcloud_deal_service_id}},key={{sonarcloud_deal_service_key}},metric=code_smells,name={{sonarcloud_deal_service_name}},type=INT,service=sonarcloud value={{sonarcloud_deal_service_status_code_smells}} {{sonarcloud_deal_service_status_analysis_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "price-service-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,branch={{sonarcloud_price_service_status_branch}},commit={{sonarcloud_price_service_status_commit}},component=statuses,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=quality_gate_status,name={{sonarcloud_price_service_name}},type=INT,service=sonarcloud value={{sonarcloud_price_service_status_quality_gate_status}} {{sonarcloud_price_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_price_service_status_branch}},commit={{sonarcloud_price_service_status_commit}},component=statuses,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=bugs,name={{sonarcloud_price_service_name}},type=INT,service=sonarcloud value={{sonarcloud_price_service_status_bugs}} {{sonarcloud_price_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_price_service_status_branch}},commit={{sonarcloud_price_service_status_commit}},component=statuses,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=vulnerabilities,name={{sonarcloud_price_service_name}},type=INT,service=sonarcloud value={{sonarcloud_price_service_status_vulnerabilities}} {{sonarcloud_price_service_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_price_service_status_branch}},commit={{sonarcloud_price_service_status_commit}},component=statuses,id={{sonarcloud_price_service_id}},key={{sonarcloud_price_service_key}},metric=code_smells,name={{sonarcloud_price_service_name}},type=INT,service=sonarcloud value={{sonarcloud_price_service_status_code_smells}} {{sonarcloud_price_service_status_analysis_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "pricing-engine-metrics",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"\tpm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "metrics,branch={{sonarcloud_pricing_engine_status_branch}},commit={{sonarcloud_pricing_engine_status_commit}},component=statuses,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=quality_gate_status,name={{sonarcloud_pricing_engine_name}},type=INT,service=sonarcloud value={{sonarcloud_pricing_engine_status_quality_gate_status}} {{sonarcloud_pricing_engine_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_pricing_engine_status_branch}},commit={{sonarcloud_pricing_engine_status_commit}},component=statuses,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=bugs,name={{sonarcloud_pricing_engine_name}},type=INT,service=sonarcloud value={{sonarcloud_pricing_engine_status_bugs}} {{sonarcloud_pricing_engine_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_pricing_engine_status_branch}},commit={{sonarcloud_pricing_engine_status_commit}},component=statuses,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=vulnerabilities,name={{sonarcloud_pricing_engine_name}},type=INT,service=sonarcloud value={{sonarcloud_pricing_engine_status_vulnerabilities}} {{sonarcloud_pricing_engine_status_analysis_date}}\n\nmetrics,branch={{sonarcloud_pricing_engine_status_branch}},commit={{sonarcloud_pricing_engine_status_commit}},component=statuses,id={{sonarcloud_pricing_engine_id}},key={{sonarcloud_pricing_engine_key}},metric=code_smells,name={{sonarcloud_pricing_engine_name}},type=INT,service=sonarcloud value={{sonarcloud_pricing_engine_status_code_smells}} {{sonarcloud_pricing_engine_status_analysis_date}}\n"
+										},
+										"url": {
+											"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+											"host": [
+												"{{INFLUXDB_BASE_URL}}"
+											],
+											"path": [
+												"write"
+											],
+											"query": [
+												{
+													"key": "db",
+													"value": "{{INFLUXDB_DATABASE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "organization",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"\tpm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "metrics,component=organization,type=STRING,service=jira organization=\"{{JIRA_ORGANIZATION}}\""
+						},
+						"url": {
+							"raw": "{{INFLUXDB_BASE_URL}}/write?db={{INFLUXDB_DATABASE}}",
+							"host": [
+								"{{INFLUXDB_BASE_URL}}"
+							],
+							"path": [
+								"write"
+							],
+							"query": [
+								{
+									"key": "db",
+									"value": "{{INFLUXDB_DATABASE}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "sonarcloud_pricing_engine_issues_total",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_issues_effortTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_issues_debtTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_new_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_new_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_new_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_new_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_id",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_key",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_name",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_qualifier",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_metrics_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_metrics_new_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_metrics_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_metrics_new_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_new_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_new_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_new_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_new_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_id",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_key",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_name",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_qualifier",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_metrics_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_metrics_new_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_metrics_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_metrics_new_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_new_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_new_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_new_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_new_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_id",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_key",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_name",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_qualifier",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_metrics_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_metrics_new_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_metrics_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_metrics_new_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_new_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_new_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_new_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_new_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_id",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_key",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_name",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_qualifier",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_metrics_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_metrics_new_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_metrics_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_metrics_new_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_new_coverage_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_new_coverage_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_new_code_smells_value",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_new_code_smells_bestValue",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_id",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_key",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_name",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_qualifier",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_metrics_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_metrics_new_coverage_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_metrics_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_metrics_new_code_smells_type",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_status_branch",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_status_quality_gate_status",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_status_bugs",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_status_vulnerabilities",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_status_code_smells",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_status_analysis_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_status_commit",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_status_branch",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_status_quality_gate_status",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_status_bugs",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_status_vulnerabilities",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_status_code_smells",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_status_analysis_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_status_commit",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_status_branch",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_status_quality_gate_status",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_status_bugs",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_status_vulnerabilities",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_status_code_smells",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_status_analysis_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_status_commit",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_status_branch",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_status_quality_gate_status",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_status_bugs",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_status_vulnerabilities",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_status_code_smells",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_status_analysis_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_status_commit",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_status_branch",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_status_quality_gate_status",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_status_bugs",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_status_vulnerabilities",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_status_code_smells",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_status_analysis_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_status_commit",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_issues_total",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_issues_effortTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_issues_debtTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_issues_total",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_issues_effortTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_issues_debtTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_issues_total",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_issues_effortTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_issues_debtTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_issues_total",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_issues_effortTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_issues_debtTotal",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_cart_calculator_service_issues_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_charge_service_issues_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_deal_service_issues_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_price_service_issues_date",
+			"value": ""
+		},
+		{
+			"key": "sonarcloud_pricing_engine_issues_date",
+			"value": ""
+		},
+		{
+			"key": "GOOGLE_SHEETS_JS_RSA_SIGN",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
