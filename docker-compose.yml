@@ -44,7 +44,7 @@ services:
       -r cli
       --bail
     volumes:
-      - ./newman:/etc/newman 
+      - ./newman:/etc/newman
     networks:
       - qametrics
     restart: on-failure:1
@@ -57,4 +57,3 @@ networks:
     external: false
     driver: bridge
     name: qametrics
-  
